@@ -1,0 +1,58 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Users ────────────────────────────────────────────────────────────────
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── BMI Profiles ─────────────────────────────────────────────────────────
+    match /bmi_profiles/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── Restaurants ──────────────────────────────────────────────────────────
+    match /restaurants/{restaurantId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'restaurant'
+        && resource.data.ownerId == request.auth.uid;
+      allow create: if request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'restaurant';
+    }
+
+    // ── Meals ────────────────────────────────────────────────────────────────
+    match /meals/{mealId} {
+      // All authenticated users can read meals
+      allow read: if request.auth != null;
+
+      // Only restaurant owners can write their own restaurant's meals
+      allow create: if request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'restaurant';
+
+      allow update, delete: if request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'restaurant'
+        && get(/databases/$(database)/documents/restaurants/$(resource.data.restaurantId)).data.ownerId == request.auth.uid;
+    }
+
+    // ── Home Meals ───────────────────────────────────────────────────────────
+    match /home_meals/{homeMealId} {
+      allow read, write: if request.auth != null
+        && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid;
+    }
+
+    // ── Meal History ─────────────────────────────────────────────────────────
+    match /meal_history/{entryId} {
+      allow read: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid;
+      allow delete: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+    }
+  }
+}

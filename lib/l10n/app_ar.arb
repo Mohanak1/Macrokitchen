@@ -1,0 +1,63 @@
+{
+  "@@locale": "ar",
+  "appName": "ماكرو كيتشن",
+  "login": "تسجيل الدخول",
+  "register": "إنشاء حساب",
+  "logout": "تسجيل الخروج",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "forgotPassword": "نسيت كلمة المرور؟",
+  "fullName": "الاسم الكامل",
+  "confirmPassword": "تأكيد كلمة المرور",
+
+  "setup": "الإعداد",
+  "gender": "الجنس",
+  "male": "ذكر",
+  "female": "أنثى",
+  "height": "الطول",
+  "weight": "الوزن",
+  "age": "العمر",
+  "exerciseFrequency": "تكرار التمارين",
+  "weightGoal": "هدف الوزن",
+  "movement": "النشاط الحركي",
+  "conditions": "الحالات الصحية",
+  "allergies": "الحساسية",
+  "calculate": "احسب",
+
+  "home": "الرئيسية",
+  "meals": "الوجبات",
+  "settings": "الإعدادات",
+
+  "caloriesRemaining": "السعرات المتبقية",
+  "weeklyProgress": "التقدم الأسبوعي",
+  "mealHistory": "سجل الوجبات",
+  "bmiProfile": "ملف مؤشر كتلة الجسم",
+
+  "restaurantMenus": "قوائم المطاعم",
+  "homeMeals": "وجبات منزلية",
+  "recommended": "موصى بها",
+  "allMeals": "جميع الوجبات",
+
+  "save": "حفظ",
+  "cancel": "إلغاء",
+  "delete": "حذف",
+  "edit": "تعديل",
+
+  "calories": "السعرات الحرارية",
+  "protein": "البروتين",
+  "carbs": "الكربوهيدرات",
+  "fat": "الدهون",
+  "sodium": "الصوديوم",
+  "sugar": "السكر",
+  "fiber": "الألياف",
+  "saturatedFat": "الدهون المشبعة",
+
+  "language": "اللغة",
+
+  "allergenWarning": "تحتوي هذه الوجبة على مسببات حساسية لديك",
+  "highSodiumWarning": "عالي الصوديوم — غير مناسب لضغط الدم المرتفع",
+  "highSugarWarning": "عالي السكر — غير مناسب لمرضى السكري",
+
+  "noMealsFound": "لا توجد وجبات.",
+  "completeBmiSetup": "أكمل إعداد مؤشر كتلة الجسم للحصول على توصيات مخصصة."
+}
