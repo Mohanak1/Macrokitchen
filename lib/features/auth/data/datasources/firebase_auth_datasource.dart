@@ -7,16 +7,19 @@ class FirebaseAuthDatasource {
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
 
-  FirebaseAuthDatasource({
-    FirebaseAuth? auth,
-    FirebaseFirestore? firestore,
-  })  : _auth = auth ?? FirebaseAuth.instance,
-        _firestore = firestore ?? FirebaseFirestore.instance;
+  FirebaseAuthDatasource({FirebaseAuth? auth, FirebaseFirestore? firestore})
+    : _auth = auth ?? FirebaseAuth.instance,
+      _firestore = firestore ?? FirebaseFirestore.instance;
 
   Stream<UserModel?> get authStateChanges {
     return _auth.authStateChanges().asyncMap((user) async {
       if (user == null) return null;
-      return _fetchUserFromFirestore(user.uid);
+      try {
+        return await _fetchUserFromFirestore(user.uid);
+      } catch (_) {
+        await _auth.signOut();
+        return null;
+      }
     });
   }
 

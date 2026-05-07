@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_text_styles.dart';
 import '../../core/router/app_router.dart';
+import '../auth/domain/entities/app_user.dart';
 import '../auth/presentation/providers/auth_provider.dart';
 import '../bmi/presentation/providers/bmi_provider.dart';
 
@@ -28,9 +29,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       vsync: this,
     );
 
-    _scaleAnim = Tween<double>(begin: 0.6, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
-    );
+    _scaleAnim = Tween<double>(
+      begin: 0.6,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
 
     _fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
@@ -43,11 +45,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigate() async {
-    // Small hold so the logo is visible
     await Future.delayed(const Duration(milliseconds: 800));
     if (!mounted) return;
 
-    final user = ref.read(authStateProvider).value;
+    final currentState = ref.read(authStateProvider);
+    final user = currentState is AsyncLoading
+        ? await ref.read(authStateProvider.future).catchError((_) => null)
+        : currentState.value;
+
+    if (!mounted) return;
+
     if (user == null) {
       context.go(AppRoutes.login);
       return;
@@ -117,8 +124,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   height: 24,
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 ),
               ],
