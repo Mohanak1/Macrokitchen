@@ -112,6 +112,15 @@ class HomeMealsDatasource {
     return snap.docs.map(HomeMealModel.fromFirestore).toList();
   }
 
+  Stream<List<HomeMealModel>> streamUserHomeMeals(String userId) {
+  return _db
+      .collection('home_meals')
+      .where('userId', isEqualTo: userId)
+      .orderBy('loggedAt', descending: true)
+      .snapshots()
+      .map((snap) => snap.docs.map(HomeMealModel.fromFirestore).toList());
+}
+
   Future<void> addHomeMeal(HomeMealModel meal) async {
     await _db.collection('home_meals').add(meal.toFirestore());
   }
@@ -140,6 +149,7 @@ class HomeMealsDatasource {
 
 abstract class HomeMealsRepository {
   Future<Either<Failure, List<HomeMeal>>> getUserHomeMeals(String userId);
+  Stream<List<HomeMeal>> streamUserHomeMeals(String userId);
   Future<Either<Failure, void>> addHomeMeal(HomeMeal meal, String userId);
   Future<Either<Failure, void>> updateHomeMeal(String id, HomeMeal meal);
   Future<Either<Failure, void>> deleteHomeMeal(String id);
@@ -160,6 +170,11 @@ class HomeMealsRepositoryImpl implements HomeMealsRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+Stream<List<HomeMeal>> streamUserHomeMeals(String userId) {
+  return _ds.streamUserHomeMeals(userId);
+}
 
   @override
   Future<Either<Failure, void>> addHomeMeal(

@@ -13,7 +13,7 @@ class HomeMealPageScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mealsAsync = ref.watch(homeMealsProvider);
+    final mealsAsync = ref.watch(homeMealsStreamProvider);
     final bmiAsync = ref.watch(bmiProfileProvider);
 
     final dailyTarget = bmiAsync.value?.dailyCalorieTarget ?? 2000;
@@ -122,7 +122,7 @@ class HomeMealPageScreen extends ConsumerWidget {
                                 await ref
                                     .read(homeMealNotifierProvider.notifier)
                                     .delete(meal.id);
-                                ref.invalidate(homeMealsProvider);
+                    
                               }
                             },
                             onEdit: () =>

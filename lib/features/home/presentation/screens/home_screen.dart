@@ -131,16 +131,7 @@ class HomeScreen extends ConsumerWidget {
                   prefixIcon: Icons.assignment_outlined,
                 ),
 
-              const SizedBox(height: AppDimensions.lg),
-
-              // ── Logout ────────────────────────────────────────────────────
-              AppButton(
-                label: 'Log Out',
-                isOutlined: true,
-                onPressed: () async {
-                  await ref.read(authNotifierProvider.notifier).logout();
-                },
-              ),
+          
 
               const SizedBox(height: AppDimensions.xxl),
             ],

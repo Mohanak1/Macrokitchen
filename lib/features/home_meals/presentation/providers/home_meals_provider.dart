@@ -20,6 +20,15 @@ final homeMealsProvider = FutureProvider<List<HomeMeal>>((ref) async {
   return result.fold((_) => [], (meals) => meals);
 });
 
+/// Live stream of the current user's home meals (newest first).
+/// Use this in the UI so the page updates automatically when a meal is saved.
+final homeMealsStreamProvider = StreamProvider<List<HomeMeal>>((ref) {
+  final user = ref.watch(authStateProvider).value;
+  if (user == null) return Stream.value(const <HomeMeal>[]);
+  final repo = ref.watch(homeMealsRepositoryProvider);
+  return repo.streamUserHomeMeals(user.uid);
+});
+
 class HomeMealNotifier extends StateNotifier<AsyncValue<void>> {
   final HomeMealsRepository _repo;
   HomeMealNotifier(this._repo) : super(const AsyncValue.data(null));

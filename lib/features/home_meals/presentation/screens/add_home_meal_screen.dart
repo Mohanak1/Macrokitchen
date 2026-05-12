@@ -39,7 +39,7 @@ class _AddHomeMealScreenState extends ConsumerState<AddHomeMealScreen> {
 
   void _loadExistingMeal() {
     // Find the meal in cache and pre-fill
-    final meals = ref.read(homeMealsProvider).value ?? [];
+    final meals = ref.read(homeMealsStreamProvider).value ?? [];
     final meal = meals.where((m) => m.id == widget.editMealId).firstOrNull;
     if (meal != null) {
       _titleCtrl.text = meal.title;
@@ -104,7 +104,6 @@ class _AddHomeMealScreenState extends ConsumerState<AddHomeMealScreen> {
         SnackBar(content: Text(error), backgroundColor: AppColors.error),
       );
     } else if (mounted) {
-      ref.invalidate(homeMealsProvider);
       context.pop();
     }
   }
