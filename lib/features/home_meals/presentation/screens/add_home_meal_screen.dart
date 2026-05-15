@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/widgets/app_widgets.dart';
@@ -110,11 +111,12 @@ class _AddHomeMealScreenState extends ConsumerState<AddHomeMealScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final isLoading = ref.watch(homeMealNotifierProvider).isLoading;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Edit Meal' : 'Home Meal'),
+        title: Text(isEditing ? l.editMeal : l.homeMeal),
         leading: BackButton(onPressed: () => context.pop()),
       ),
       body: SingleChildScrollView(
@@ -124,40 +126,40 @@ class _AddHomeMealScreenState extends ConsumerState<AddHomeMealScreen> {
           child: Column(
             children: [
               // Required fields
-              _FormField(hint: 'Title', required: true, ctrl: _titleCtrl),
+              _FormField(hint: l.titleField, required: true, ctrl: _titleCtrl),
               const SizedBox(height: AppDimensions.md),
               _FormField(
-                  hint: 'Notes',
+                  hint: l.notes,
                   ctrl: _notesCtrl,
                   maxLines: 3,
                   keyboardType: TextInputType.multiline),
               const SizedBox(height: AppDimensions.md),
               _FormField(
-                  hint: 'kCal',
+                  hint: l.kCal,
                   required: true,
                   ctrl: _kCalCtrl,
                   keyboardType: TextInputType.number),
               const SizedBox(height: AppDimensions.md),
               _FormField(
-                  hint: 'Protein',
+                  hint: l.protein,
                   required: true,
                   ctrl: _proteinCtrl,
                   keyboardType: TextInputType.number),
               const SizedBox(height: AppDimensions.md),
               _FormField(
-                  hint: 'Carbs',
+                  hint: l.carbs,
                   required: true,
                   ctrl: _carbsCtrl,
                   keyboardType: TextInputType.number),
               const SizedBox(height: AppDimensions.md),
               _FormField(
-                  hint: 'Total Fat',
+                  hint: l.totalFat,
                   required: true,
                   ctrl: _fatCtrl,
                   keyboardType: TextInputType.number),
               const SizedBox(height: AppDimensions.md),
               _FormField(
-                  hint: 'Sodium',
+                  hint: l.sodium,
                   ctrl: _sodiumCtrl,
                   keyboardType: TextInputType.number),
               const SizedBox(height: AppDimensions.md),
@@ -165,14 +167,14 @@ class _AddHomeMealScreenState extends ConsumerState<AddHomeMealScreen> {
                 children: [
                   Expanded(
                     child: _FormField(
-                        hint: 'Sugar',
+                        hint: l.sugar,
                         ctrl: _sugarCtrl,
                         keyboardType: TextInputType.number),
                   ),
                   const SizedBox(width: AppDimensions.md),
                   Expanded(
                     child: _FormField(
-                        hint: 'Fiber',
+                        hint: l.fiber,
                         ctrl: _fiberCtrl,
                         keyboardType: TextInputType.number),
                   ),
@@ -180,12 +182,12 @@ class _AddHomeMealScreenState extends ConsumerState<AddHomeMealScreen> {
               ),
               const SizedBox(height: AppDimensions.md),
               _FormField(
-                  hint: 'Saturated Fat',
+                  hint: l.saturatedFat,
                   ctrl: _saturatedFatCtrl,
                   keyboardType: TextInputType.number),
               const SizedBox(height: AppDimensions.xxxl),
               AppButton(
-                label: 'Save',
+                label: l.save,
                 onPressed: _save,
                 isLoading: isLoading,
               ),
@@ -215,6 +217,7 @@ class _FormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return TextFormField(
       controller: ctrl,
       keyboardType: keyboardType,
@@ -224,10 +227,10 @@ class _FormField extends StatelessWidget {
       ),
       validator: required
           ? (v) {
-              if (v == null || v.trim().isEmpty) return '$hint is required';
+              if (v == null || v.trim().isEmpty) return l.fieldRequired;
               if (keyboardType == TextInputType.number &&
                   double.tryParse(v) == null) {
-                return 'Enter a valid number';
+                return l.enterValidNumber;
               }
               return null;
             }

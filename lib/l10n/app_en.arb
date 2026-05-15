@@ -112,4 +112,70 @@
   "@noMealsFound": {},
   "completeBmiSetup": "Complete your BMI setup to get personalized recommendations.",
   "@completeBmiSetup": {}
+
+  ,
+  "homeMealPage": "Home Meal Page",
+  "@homeMealPage": {},
+
+  "kCal": "kCal",
+  "@kCal": {},
+
+  "totalFat": "Total Fat",
+  "@totalFat": {},
+
+  "noHomeMealsYet": "No home meals logged yet.",
+  "@noHomeMealsYet": {},
+
+  "logAMeal": "Log a Meal",
+  "@logAMeal": {},
+
+  "errorLoadingMeals": "Error loading meals",
+  "@errorLoadingMeals": {},
+
+  "deleteMealTitle": "Delete meal?",
+  "@deleteMealTitle": {},
+
+  "deleteMealMessage": "This meal will be removed from your log.",
+  "@deleteMealMessage": {}
+  ,
+  "editMeal": "Edit Meal",
+  "@editMeal": {},
+  "homeMeal": "Home Meal",
+  "@homeMeal": {},
+  "titleField": "Title",
+  "@titleField": {},
+  "notes": "Notes",
+  "@notes": {},
+  "fieldRequired": "This field is required",
+  "@fieldRequired": {},
+  "enterValidNumber": "Enter a valid number",
+  "@enterValidNumber": {}
+
+  ,
+  "profile": "Profile",
+  "@profile": {},
+
+  "nutritionReport": "Nutrition Report",
+  "@nutritionReport": {},
+
+  "helloUser": "Hello, {name} 👋",
+  "@helloUser": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "bmiSummary": "BMI: {value} · {goal}",
+  "@bmiSummary": {
+    "placeholders": {
+      "value": {"type": "String"},
+      "goal": {"type": "String"}
+    }
+  },
+
+  "setupHint": "Complete setup to get recommendations",
+  "@setupHint": {},
+
+  "setupBmiNow": "Complete BMI Setup",
+  "@setupBmiNow": {}
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_text_styles.dart';
@@ -10,11 +11,13 @@ import '../../../../core/widgets/nutrition_widgets.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../bmi/presentation/providers/bmi_provider.dart';
 import '../../../history/presentation/providers/history_provider.dart';
+
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final authState = ref.watch(authStateProvider);
     final bmiAsync = ref.watch(bmiProfileProvider);
     final todayTotalsAsync = ref.watch(todayTotalsProvider);
@@ -25,7 +28,7 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(l.profile),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
@@ -46,13 +49,16 @@ class HomeScreen extends ConsumerWidget {
             children: [
               // ── Greeting ─────────────────────────────────────────────────
               if (user != null) ...[
-                Text('Hello, ${user.name.split(' ').first} 👋',
+                Text(l.helloUser(user.name.split(' ').first),
                     style: AppTextStyles.headlineMedium),
                 const SizedBox(height: AppDimensions.xs),
                 Text(
                   profile != null
-                      ? 'BMI: ${profile.bmiValue.toStringAsFixed(1)} · ${profile.goal.labelEn}'
-                      : 'Complete setup to get recommendations',
+                      ? l.bmiSummary(
+                          profile.bmiValue.toStringAsFixed(1),
+                          profile.goal.labelEn,
+                        )
+                      : l.setupHint,
                   style: AppTextStyles.bodyMedium,
                 ),
                 const SizedBox(height: AppDimensions.xl),
@@ -99,25 +105,25 @@ class HomeScreen extends ConsumerWidget {
               // ── Quick Links ───────────────────────────────────────────────
               _QuickLink(
                 icon: Icons.directions_walk,
-                label: 'Weekly progress',
+                label: l.weeklyProgress,
                 onTap: () => context.go('${AppRoutes.home}/weekly-progress'),
               ),
               const SizedBox(height: AppDimensions.md),
               _QuickLink(
                 icon: Icons.restaurant_menu,
-                label: 'Meal History',
+                label: l.mealHistory,
                 onTap: () => context.go('${AppRoutes.home}/meal-history'),
               ),
               const SizedBox(height: AppDimensions.md),
               _QuickLink(
                 icon: Icons.monitor_weight_outlined,
-                label: 'BMI Profile',
+                label: l.bmiProfile,
                 onTap: () => context.go('${AppRoutes.home}/bmi-page'),
               ),
               const SizedBox(height: AppDimensions.md),
               _QuickLink(
                 icon: Icons.summarize_outlined,
-                label: 'Nutrition Report',
+                label: l.nutritionReport,
                 onTap: () => context.go('${AppRoutes.home}/report'),
               ),
 
@@ -126,12 +132,10 @@ class HomeScreen extends ConsumerWidget {
               // ── Setup CTA (if no profile) ─────────────────────────────────
               if (profile == null)
                 AppButton(
-                  label: 'Complete BMI Setup',
+                  label: l.setupBmiNow,
                   onPressed: () => context.go(AppRoutes.setup),
                   prefixIcon: Icons.assignment_outlined,
                 ),
-
-          
 
               const SizedBox(height: AppDimensions.xxl),
             ],

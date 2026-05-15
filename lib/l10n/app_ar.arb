@@ -7,9 +7,16 @@
   "email": "البريد الإلكتروني",
   "password": "كلمة المرور",
   "forgotPassword": "نسيت كلمة المرور؟",
-  "fullName": "الاسم الكامل",
   "confirmPassword": "تأكيد كلمة المرور",
-
+  
+  
+  "editMeal": "تعديل الوجبة",
+  "homeMeal": "وجبة منزلية",
+  "titleField": "العنوان",
+  "notes": "ملاحظات",
+  "fieldRequired": "هذا الحقل مطلوب",
+  "enterValidNumber": "أدخل رقمًا صحيحًا",
+  
   "setup": "الإعداد",
   "gender": "الجنس",
   "male": "ذكر",
@@ -60,4 +67,21 @@
 
   "noMealsFound": "لا توجد وجبات.",
   "completeBmiSetup": "أكمل إعداد مؤشر كتلة الجسم للحصول على توصيات مخصصة."
+  ,
+  "homeMealPage": "صفحة الوجبات المنزلية",
+  "kCal": "سعر حراري",
+  "totalFat": "إجمالي الدهون",
+  "noHomeMealsYet": "لم يتم تسجيل أي وجبات منزلية بعد.",
+  "logAMeal": "تسجيل وجبة",
+  "errorLoadingMeals": "خطأ في تحميل الوجبات",
+  "deleteMealTitle": "حذف الوجبة؟",
+  "deleteMealMessage": "ستتم إزالة هذه الوجبة من سجلك."
+
+  ,
+  "profile": "الملف الشخصي",
+  "nutritionReport": "تقرير التغذية",
+  "helloUser": "مرحبًا، {name} 👋",
+  "bmiSummary": "مؤشر كتلة الجسم: {value} · {goal}",
+  "setupHint": "أكمل الإعداد للحصول على توصيات",
+  "setupBmiNow": "أكمل إعداد مؤشر كتلة الجسم"
 }

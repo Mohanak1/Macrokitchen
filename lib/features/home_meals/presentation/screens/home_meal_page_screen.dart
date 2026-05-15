@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_text_styles.dart';
@@ -15,22 +16,23 @@ class HomeMealPageScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mealsAsync = ref.watch(homeMealsStreamProvider);
     final bmiAsync = ref.watch(bmiProfileProvider);
+    final l = AppLocalizations.of(context)!;
 
     final dailyTarget = bmiAsync.value?.dailyCalorieTarget ?? 2000;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Meal Page'),
+        title: Text(l.homeMealPage),
         actions: [
           TextButton(
             onPressed: () => context.go('/home-meals/add'),
-            child: const Text('Edit'),
+            child: Text(l.edit),
           ),
         ],
       ),
       body: mealsAsync.when(
         loading: () => const AppLoading(),
-        error: (e, _) => AppErrorWidget(message: e.toString()),
+        error: (e, _) => Center(child: Text('${l.errorLoadingMeals}: $e')),
         data: (meals) {
           final totalConsumed =
               meals.fold<double>(0, (sum, m) => sum + m.calories);
@@ -56,11 +58,11 @@ class HomeMealPageScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Calories Remaining',
+                    Text(l.caloriesRemaining,
                         style: AppTextStyles.headlineSmall),
                     const SizedBox(height: AppDimensions.sm),
                     Text(
-                      '${dailyTarget.toStringAsFixed(0)} - ${totalConsumed.toStringAsFixed(0)} = ${remaining.toStringAsFixed(0)} kCal',
+                      '${dailyTarget.toStringAsFixed(0)} - ${totalConsumed.toStringAsFixed(0)} = ${remaining.toStringAsFixed(0)} ${l.kCal}',
                       style: AppTextStyles.bodyMedium,
                     ),
                     const SizedBox(height: AppDimensions.md),
@@ -103,9 +105,9 @@ class HomeMealPageScreen extends ConsumerWidget {
               Expanded(
                 child: meals.isEmpty
                     ? AppEmptyWidget(
-                        message: 'No home meals logged yet.',
+                        message: l.noHomeMealsYet,
                         icon: Icons.add_box_outlined,
-                        actionLabel: 'Log a Meal',
+                        actionLabel: l.logAMeal,
                         onAction: () => context.go('/home-meals/add'),
                       )
                     : ListView.builder(
@@ -122,7 +124,6 @@ class HomeMealPageScreen extends ConsumerWidget {
                                 await ref
                                     .read(homeMealNotifierProvider.notifier)
                                     .delete(meal.id);
-                    
                               }
                             },
                             onEdit: () =>
@@ -144,18 +145,19 @@ class HomeMealPageScreen extends ConsumerWidget {
   }
 
   Future<bool?> _confirm(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete meal?'),
-        content: const Text('This meal will be removed from your log.'),
+        title: Text(l.deleteMealTitle),
+        content: Text(l.deleteMealMessage),
         actions: [
           TextButton(
-              onPressed: () => ctx.pop(false), child: const Text('Cancel')),
+              onPressed: () => ctx.pop(false), child: Text(l.cancel)),
           TextButton(
               onPressed: () => ctx.pop(true),
-              child: const Text('Delete',
-                  style: TextStyle(color: AppColors.error))),
+              child: Text(l.delete,
+                  style: const TextStyle(color: AppColors.error))),
         ],
       ),
     );
@@ -175,6 +177,7 @@ class _HomeMealTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(bottom: AppDimensions.md),
       padding: const EdgeInsets.all(AppDimensions.md),
@@ -200,7 +203,7 @@ class _HomeMealTile extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis),
                     ),
-                    Text('${meal.calories.toStringAsFixed(0)} kCal',
+                    Text('${meal.calories.toStringAsFixed(0)} ${l.kCal}',
                         style: AppTextStyles.labelLarge
                             .copyWith(color: AppColors.primary)),
                   ],
@@ -220,11 +223,11 @@ class _HomeMealTile extends StatelessWidget {
               if (v == 'delete') onDelete();
             },
             itemBuilder: (_) => [
-              const PopupMenuItem(value: 'edit', child: Text('Edit')),
-              const PopupMenuItem(
+              PopupMenuItem(value: 'edit', child: Text(l.edit)),
+              PopupMenuItem(
                   value: 'delete',
-                  child:
-                      Text('Delete', style: TextStyle(color: AppColors.error))),
+                  child: Text(l.delete,
+                      style: const TextStyle(color: AppColors.error))),
             ],
           ),
         ],
