@@ -43,6 +43,11 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         password: password,
       );
+      if (user.isRestaurant) {
+        await _datasource.logout();
+        return const Left(AuthFailure(
+            'This account is for restaurants only. Please use the restaurant sign-in page.'));
+      }
       return Right(user);
     } on AuthException catch (e) {
       return Left(AuthFailure(e.message));
@@ -81,7 +86,8 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final user = await _datasource.login(email: email, password: password);
       if (!user.isRestaurant) {
-        return const Left(AuthFailure('This account is not a restaurant account.'));
+        return const Left(
+            AuthFailure('This account is not a restaurant account.'));
       }
       return Right(user);
     } on AuthException catch (e) {

@@ -58,9 +58,12 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: AppRoutes.splash,
     debugLogDiagnostics: false,
     redirect: (context, state) {
-      final isLoggedIn = authState.value != null;
+      final user = authState.value;
+      final isLoggedIn = user != null;
+      final isRestaurant = user?.isRestaurant ?? false;
       final isSplash = state.matchedLocation == AppRoutes.splash;
-      final isAuthRoute = state.matchedLocation == AppRoutes.login ||
+      final isAuthRoute =
+          state.matchedLocation == AppRoutes.login ||
           state.matchedLocation == AppRoutes.register ||
           state.matchedLocation == AppRoutes.forgotPassword ||
           state.matchedLocation == AppRoutes.restaurantLogin;
@@ -71,11 +74,20 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Restaurant dashboard pages — auth checked inside screen
       if (state.matchedLocation.startsWith('/restaurant') &&
           state.matchedLocation != AppRoutes.restaurantLogin) {
+        if (!isLoggedIn) return AppRoutes.restaurantLogin;
+        if (!isRestaurant) return AppRoutes.home;
         return null;
       }
 
       if (!isLoggedIn && !isAuthRoute) return AppRoutes.login;
-      if (isLoggedIn && isAuthRoute) return AppRoutes.home;
+
+      if (isLoggedIn && isAuthRoute) {
+        return isRestaurant ? AppRoutes.restaurantDashboard : AppRoutes.home;
+      }
+
+      // Prevent restaurant accounts from accessing regular user pages
+      if (isLoggedIn && isRestaurant) return AppRoutes.restaurantDashboard;
+
       return null;
     },
     routes: [
@@ -126,9 +138,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(
             path: AppRoutes.home,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: HomeScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: HomeScreen()),
             routes: [
               GoRoute(
                 path: 'bmi-page',
@@ -154,9 +165,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: AppRoutes.meals,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: RestaurantMenusScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: RestaurantMenusScreen()),
             routes: [
               GoRoute(
                 path: ':mealId',
@@ -169,9 +179,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: AppRoutes.homeMeals,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: HomeMealPageScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: HomeMealPageScreen()),
             routes: [
               GoRoute(
                 path: 'add',
