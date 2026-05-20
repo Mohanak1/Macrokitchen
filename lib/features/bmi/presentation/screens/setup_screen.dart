@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_text_styles.dart';
@@ -131,28 +132,29 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final isLoading = ref.watch(bmiNotifierProvider).isLoading;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('SetUp')),
+      appBar: AppBar(title: Text(l.setup)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppDimensions.pagePaddingH),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Gender ──────────────────────────────────────────────────────
-            const _SectionLabel('Gender'),
+            _SectionLabel(l.gender),
             const SizedBox(height: AppDimensions.sm),
             Row(
               children: [
                 _GenderButton(
-                  label: 'Male',
+                  label: l.male,
                   selected: _gender == 'male',
                   onTap: () => setState(() => _gender = 'male'),
                 ),
                 const SizedBox(width: AppDimensions.lg),
                 _GenderButton(
-                  label: 'Female',
+                  label: l.female,
                   selected: _gender == 'female',
                   onTap: () => setState(() => _gender = 'female'),
                 ),
@@ -166,7 +168,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
               children: [
                 Expanded(
                   child: _MeasurementField(
-                    label: 'Height',
+                    label: l.height,
                     unit: 'cm',
                     controller: _heightCtrl,
                   ),
@@ -174,7 +176,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                 const SizedBox(width: AppDimensions.lg),
                 Expanded(
                   child: _MeasurementField(
-                    label: 'Weight',
+                    label: l.weight,
                     unit: 'kg',
                     controller: _weightCtrl,
                   ),
@@ -186,7 +188,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
               child: SizedBox(
                 width: 140,
                 child: _MeasurementField(
-                  label: 'Age',
+                  label: l.age,
                   unit: 'yrs',
                   controller: _ageCtrl,
                 ),
@@ -196,7 +198,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
             const SizedBox(height: AppDimensions.xl),
 
             // ── Exercise Frequency ───────────────────────────────────────────
-            const _SectionLabel('Exercise frequency'),
+            _SectionLabel(l.exerciseFrequency),
             const SizedBox(height: AppDimensions.sm),
             _DropdownField<ActivityLevel>(
               value: _activityLevel,
@@ -208,7 +210,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
             const SizedBox(height: AppDimensions.lg),
 
             // ── Weight Goal ──────────────────────────────────────────────────
-            const _SectionLabel('Weight goal'),
+            _SectionLabel(l.weightGoal),
             const SizedBox(height: AppDimensions.sm),
             _DropdownField<UserGoal>(
               value: _goal,
@@ -220,7 +222,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
             const SizedBox(height: AppDimensions.lg),
 
             // ── Movement ─────────────────────────────────────────────────────
-            const _SectionLabel('Movement'),
+            _SectionLabel(l.movement),
             const SizedBox(height: AppDimensions.sm),
             _DropdownField<String>(
               value: _movement,
@@ -232,7 +234,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
             const SizedBox(height: AppDimensions.xl),
 
             // ── Conditions ───────────────────────────────────────────────────
-            const _SectionLabel('Conditions'),
+            _SectionLabel(l.conditions),
             const SizedBox(height: AppDimensions.sm),
             Wrap(
               spacing: AppDimensions.sm,
@@ -254,7 +256,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
             const SizedBox(height: AppDimensions.xl),
 
             // ── Allergies ────────────────────────────────────────────────────
-            const _SectionLabel('Allergies'),
+            _SectionLabel(l.allergies),
             const SizedBox(height: AppDimensions.sm),
             Wrap(
               spacing: AppDimensions.sm,
@@ -277,7 +279,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
 
             // ── Calculate Button ─────────────────────────────────────────────
             AppButton(
-              label: 'Calculate',
+              label: l.calculate,
               onPressed: _calculate,
               isLoading: isLoading,
             ),

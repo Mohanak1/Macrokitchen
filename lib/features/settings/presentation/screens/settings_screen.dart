@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_text_styles.dart';
@@ -13,15 +14,17 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final settings = ref.watch(settingsProvider);
     final isArabic = settings.language == 'ar';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(l.settings)),
       body: ListView(
         padding: const EdgeInsets.all(AppDimensions.pagePaddingH),
         children: [
           // ── Language ──────────────────────────────────────────────────
+          // Kept bilingual on purpose so users can find it in either language.
           _SettingsSection(
             title: 'Language / اللغة',
             child: Row(
@@ -47,30 +50,30 @@ class SettingsScreen extends ConsumerWidget {
 
           // ── Account ───────────────────────────────────────────────────
           _SettingsSection(
-            title: 'Account',
+            title: l.account,
             child: Column(
               children: [
                 _SettingsTile(
                   icon: Icons.person_outline,
-                  label: 'Edit BMI Profile',
+                  label: l.editBmiProfile,
                   onTap: () => context.go(AppRoutes.setup),
                 ),
                 const Divider(height: 1),
                 _SettingsTile(
                   icon: Icons.monitor_weight_outlined,
-                  label: 'View BMI Data',
+                  label: l.viewBmiData,
                   onTap: () => context.go('${AppRoutes.home}/bmi-page'),
                 ),
                 const Divider(height: 1),
                 _SettingsTile(
                   icon: Icons.history,
-                  label: 'Meal History',
+                  label: l.mealHistory,
                   onTap: () => context.go('${AppRoutes.home}/meal-history'),
                 ),
                 const Divider(height: 1),
                 _SettingsTile(
                   icon: Icons.summarize_outlined,
-                  label: 'Nutrition Report',
+                  label: l.nutritionReport,
                   onTap: () => context.go('${AppRoutes.home}/report'),
                 ),
               ],
@@ -80,21 +83,21 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: AppDimensions.xl),
 
           // ── About ─────────────────────────────────────────────────────
-          const _SettingsSection(
-            title: 'About',
+          _SettingsSection(
+            title: l.about,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.all(AppDimensions.md),
+                  padding: const EdgeInsets.all(AppDimensions.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('MacroKitchen v1.0.0',
+                      const Text('MacroKitchen v1.0.0',
                           style: AppTextStyles.labelLarge),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
-                        'Smart nutrition and meal recommendation app.\nUniversity of Jeddah — Software Engineering Dept.',
+                        l.appDescription,
                         style: AppTextStyles.bodyMedium,
                       ),
                     ],
@@ -109,7 +112,7 @@ class SettingsScreen extends ConsumerWidget {
           // ── Logout ────────────────────────────────────────────────────
           _SettingsTile(
             icon: Icons.logout,
-            label: 'Log Out',
+            label: l.logout,
             iconColor: AppColors.error,
             labelColor: AppColors.error,
             onTap: () async {

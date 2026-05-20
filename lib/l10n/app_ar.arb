@@ -84,4 +84,22 @@
   "bmiSummary": "مؤشر كتلة الجسم: {value} · {goal}",
   "setupHint": "أكمل الإعداد للحصول على توصيات",
   "setupBmiNow": "أكمل إعداد مؤشر كتلة الجسم"
+
+,
+"account": "الحساب",
+  "editBmiProfile": "تعديل ملف BMI",
+  "viewBmiData": "عرض بيانات BMI",
+  "about": "حول التطبيق",
+  "appDescription": "تطبيق ذكي للتغذية وتوصيات الوجبات.\nجامعة جدة — قسم هندسة البرمجيات."
+
+
+  ,
+  "bmiPage": "صفحة BMI",
+  "noBmiData": "لا توجد بيانات بعد.\nأكمل الإعداد للبدء.",
+  "setUpNow": "ابدأ الإعداد",
+  "activity": "النشاط",
+  "goal": "الهدف",
+  "dailyCalorieTarget": "السعرات اليومية المستهدفة",
+  "editProfile": "تعديل الملف الشخصي"
 }
+

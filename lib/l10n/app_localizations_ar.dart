@@ -225,4 +225,41 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get setupBmiNow => 'أكمل إعداد مؤشر كتلة الجسم';
+
+  @override
+  String get account => 'الحساب';
+
+  @override
+  String get editBmiProfile => 'تعديل ملف BMI';
+
+  @override
+  String get viewBmiData => 'عرض بيانات BMI';
+
+  @override
+  String get about => 'حول التطبيق';
+
+  @override
+  String get appDescription =>
+      'تطبيق ذكي للتغذية وتوصيات الوجبات.\nجامعة جدة — قسم هندسة البرمجيات.';
+
+  @override
+  String get bmiPage => 'صفحة BMI';
+
+  @override
+  String get noBmiData => 'لا توجد بيانات بعد.\nأكمل الإعداد للبدء.';
+
+  @override
+  String get setUpNow => 'ابدأ الإعداد';
+
+  @override
+  String get activity => 'النشاط';
+
+  @override
+  String get goal => 'الهدف';
+
+  @override
+  String get dailyCalorieTarget => 'السعرات اليومية المستهدفة';
+
+  @override
+  String get editProfile => 'تعديل الملف الشخصي';
 }

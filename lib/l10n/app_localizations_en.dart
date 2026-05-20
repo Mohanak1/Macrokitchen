@@ -226,4 +226,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setupBmiNow => 'Complete BMI Setup';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get editBmiProfile => 'Edit BMI Profile';
+
+  @override
+  String get viewBmiData => 'View BMI Data';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get appDescription =>
+      'Smart nutrition and meal recommendation app.\nUniversity of Jeddah — Software Engineering Dept.';
+
+  @override
+  String get bmiPage => 'BMI Page';
+
+  @override
+  String get noBmiData =>
+      'No BMI data yet.\nComplete the setup to get started.';
+
+  @override
+  String get setUpNow => 'Set Up Now';
+
+  @override
+  String get activity => 'Activity';
+
+  @override
+  String get goal => 'Goal';
+
+  @override
+  String get dailyCalorieTarget => 'Daily Calorie Target';
+
+  @override
+  String get editProfile => 'Edit Profile';
 }

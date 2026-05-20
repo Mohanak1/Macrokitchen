@@ -177,5 +177,41 @@
   "@setupHint": {},
 
   "setupBmiNow": "Complete BMI Setup",
-  "@setupBmiNow": {}
+  "@setupBmiNow": {},
+
+  "account": "Account",
+  "@account": {},
+
+  "editBmiProfile": "Edit BMI Profile",
+  "@editBmiProfile": {},
+
+  "viewBmiData": "View BMI Data",
+  "@viewBmiData": {},
+
+  "about": "About",
+  "@about": {},
+
+  "appDescription": "Smart nutrition and meal recommendation app.\nUniversity of Jeddah — Software Engineering Dept.",
+  "@appDescription": {},
+
+  "bmiPage": "BMI Page",
+  "@bmiPage": {},
+
+  "noBmiData": "No BMI data yet.\nComplete the setup to get started.",
+  "@noBmiData": {},
+
+  "setUpNow": "Set Up Now",
+  "@setUpNow": {},
+
+  "activity": "Activity",
+  "@activity": {},
+
+  "goal": "Goal",
+  "@goal": {},
+
+  "dailyCalorieTarget": "Daily Calorie Target",
+  "@dailyCalorieTarget": {},
+
+  "editProfile": "Edit Profile",
+  "@editProfile": {}
 }

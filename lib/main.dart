@@ -9,8 +9,6 @@ import 'core/widgets/offline_banner.dart';
 import 'features/settings/presentation/providers/settings_provider.dart';
 import 'firebase_options.dart';
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -51,17 +49,16 @@ class MacroKitchenApp extends ConsumerWidget {
         Locale('ar'),
       ],
       localizationsDelegates: const [
-  AppLocalizations.delegate,
-  GlobalMaterialLocalizations.delegate,
-  GlobalWidgetsLocalizations.delegate,
-  GlobalCupertinoLocalizations.delegate,
-],
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
 
       // RTL support + offline banner
       builder: (context, child) {
         return Directionality(
-          textDirection:
-              isArabic ? TextDirection.rtl : TextDirection.ltr,
+          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: OfflineAwareBanner(child: child!),
         );
       },

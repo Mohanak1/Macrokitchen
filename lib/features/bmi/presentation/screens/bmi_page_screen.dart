@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_text_styles.dart';
@@ -14,11 +15,12 @@ class BmiPageScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final bmiAsync = ref.watch(bmiProfileProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('BMI Page'),
+        title: Text(l.bmiPage),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
@@ -32,9 +34,9 @@ class BmiPageScreen extends ConsumerWidget {
         data: (profile) {
           if (profile == null) {
             return AppEmptyWidget(
-              message: 'No BMI data yet.\nComplete the setup to get started.',
+              message: l.noBmiData,
               icon: Icons.monitor_weight_outlined,
-              actionLabel: 'Set Up Now',
+              actionLabel: l.setUpNow,
               onAction: () => context.go(AppRoutes.setup),
             );
           }
@@ -48,8 +50,8 @@ class BmiPageScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // User name
-                const Text(
-                  'Profile',
+                Text(
+                  l.profile,
                   style: AppTextStyles.bodyMedium,
                 ),
                 const SizedBox(height: AppDimensions.xl),
@@ -58,7 +60,7 @@ class BmiPageScreen extends ConsumerWidget {
                 _MetricCard(
                   icon: Icons.straighten,
                   value: '${profile.heightCm.toStringAsFixed(0)}cm',
-                  label: 'Height',
+                  label: l.height,
                 ),
                 const SizedBox(height: AppDimensions.md),
 
@@ -66,7 +68,7 @@ class BmiPageScreen extends ConsumerWidget {
                 _MetricCard(
                   icon: Icons.monitor_weight_outlined,
                   value: '${profile.weightKg.toStringAsFixed(0)}kg',
-                  label: 'Weight',
+                  label: l.weight,
                 ),
                 const SizedBox(height: AppDimensions.md),
 
@@ -82,7 +84,7 @@ class BmiPageScreen extends ConsumerWidget {
 
                 // Conditions
                 if (profile.conditions.isNotEmpty) ...[
-                  const Text('Conditions', style: AppTextStyles.headlineSmall),
+                  Text(l.conditions, style: AppTextStyles.headlineSmall),
                   const SizedBox(height: AppDimensions.sm),
                   Wrap(
                     spacing: AppDimensions.sm,
@@ -103,7 +105,7 @@ class BmiPageScreen extends ConsumerWidget {
 
                 // Allergies
                 if (profile.allergies.isNotEmpty) ...[
-                  const Text('Allergies', style: AppTextStyles.headlineSmall),
+                  Text(l.allergies, style: AppTextStyles.headlineSmall),
                   const SizedBox(height: AppDimensions.sm),
                   Wrap(
                     spacing: AppDimensions.sm,
@@ -124,25 +126,25 @@ class BmiPageScreen extends ConsumerWidget {
                 ],
 
                 // Activity
-                const Text('Activity', style: AppTextStyles.headlineSmall),
+                Text(l.activity, style: AppTextStyles.headlineSmall),
                 const SizedBox(height: AppDimensions.sm),
                 _InfoRow(
-                    label: 'Exercise Frequency',
+                    label: l.exerciseFrequency,
                     value: profile.activityLevel.labelEn),
                 _InfoRow(
-                    label: 'Movement',
+                    label: l.movement,
                     value: profile.movement[0].toUpperCase() +
                         profile.movement.substring(1)),
-                _InfoRow(label: 'Goal', value: profile.goal.labelEn),
+                _InfoRow(label: l.goal, value: profile.goal.labelEn),
                 _InfoRow(
-                    label: 'Daily Calorie Target',
+                    label: l.dailyCalorieTarget,
                     value:
                         '${profile.dailyCalorieTarget.toStringAsFixed(0)} kcal'),
 
                 const SizedBox(height: AppDimensions.xxxl),
 
                 AppButton(
-                  label: 'Edit Profile',
+                  label: l.editProfile,
                   isOutlined: true,
                   onPressed: () => context.go(AppRoutes.setup),
                 ),

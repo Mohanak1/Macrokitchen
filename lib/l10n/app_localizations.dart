@@ -523,6 +523,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Complete BMI Setup'**
   String get setupBmiNow;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// No description provided for @editBmiProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit BMI Profile'**
+  String get editBmiProfile;
+
+  /// No description provided for @viewBmiData.
+  ///
+  /// In en, this message translates to:
+  /// **'View BMI Data'**
+  String get viewBmiData;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @appDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart nutrition and meal recommendation app.\nUniversity of Jeddah — Software Engineering Dept.'**
+  String get appDescription;
+
+  /// No description provided for @bmiPage.
+  ///
+  /// In en, this message translates to:
+  /// **'BMI Page'**
+  String get bmiPage;
+
+  /// No description provided for @noBmiData.
+  ///
+  /// In en, this message translates to:
+  /// **'No BMI data yet.\nComplete the setup to get started.'**
+  String get noBmiData;
+
+  /// No description provided for @setUpNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Up Now'**
+  String get setUpNow;
+
+  /// No description provided for @activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activity;
+
+  /// No description provided for @goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get goal;
+
+  /// No description provided for @dailyCalorieTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Calorie Target'**
+  String get dailyCalorieTarget;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
 }
 
 class _AppLocalizationsDelegate
