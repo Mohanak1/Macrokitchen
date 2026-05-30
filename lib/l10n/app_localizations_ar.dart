@@ -262,4 +262,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get editProfile => 'تعديل الملف الشخصي';
+
+  @override
+  String get navHome => 'الرئيسية';
+
+  @override
+  String get navMeals => 'الوجبات';
+
+  @override
+  String get navSettings => 'الإعدادات';
 }

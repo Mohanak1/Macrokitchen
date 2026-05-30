@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../l10n/app_localizations.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_dimensions.dart';
 import '../router/app_router.dart';
@@ -11,14 +12,15 @@ class MainShell extends StatelessWidget {
 
   int _currentIndex(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
-    if (location.startsWith(AppRoutes.meals)) return 1;
-    if (location.startsWith(AppRoutes.homeMeals)) return 2;
-    return 0;
+    if (location.startsWith(AppRoutes.meals)) return 0;
+    if (location.contains('settings'))        return 2;
+    return 1; // Home
   }
 
   @override
   Widget build(BuildContext context) {
     final index = _currentIndex(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: child,
@@ -42,22 +44,22 @@ class MainShell extends StatelessWidget {
                 _NavItem(
                   icon: Icons.restaurant_menu_outlined,
                   activeIcon: Icons.restaurant_menu,
-                  label: 'Meals',
-                  isSelected: index == 1,
+                  label: l10n.navMeals,
+                  isSelected: index == 0,
                   onTap: () => context.go(AppRoutes.meals),
                 ),
                 _NavItem(
                   icon: Icons.home_outlined,
                   activeIcon: Icons.home,
-                  label: 'Home',
-                  isSelected: index == 0,
+                  label: l10n.navHome,
+                  isSelected: index == 1,
                   onTap: () => context.go(AppRoutes.home),
                 ),
                 _NavItem(
                   icon: Icons.settings_outlined,
                   activeIcon: Icons.settings,
-                  label: 'Settings',
-                  isSelected: false,
+                  label: l10n.navSettings,
+                  isSelected: index == 2,
                   onTap: () => context.go('${AppRoutes.home}/settings'),
                 ),
               ],

@@ -213,5 +213,9 @@
   "@dailyCalorieTarget": {},
 
   "editProfile": "Edit Profile",
-  "@editProfile": {}
+  "@editProfile": {},
+
+"navHome": "Home",
+"navMeals": "Meals",
+"navSettings": "Settings"
 }

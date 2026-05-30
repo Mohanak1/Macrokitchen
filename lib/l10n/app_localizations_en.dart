@@ -264,4 +264,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editProfile => 'Edit Profile';
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navMeals => 'Meals';
+
+  @override
+  String get navSettings => 'Settings';
 }

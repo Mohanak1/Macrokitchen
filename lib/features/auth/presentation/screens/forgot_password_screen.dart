@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../providers/auth_provider.dart';
 
@@ -46,7 +47,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(onPressed: () => context.pop()),
+        leading: BackButton(onPressed: () => context.go(AppRoutes.login)),
         title: const Text('Reset Password'),
       ),
       body: Padding(
@@ -124,7 +125,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         const SizedBox(height: AppDimensions.xxxl),
         AppButton(
           label: 'Back to Login',
-          onPressed: () => context.pop(),
+          onPressed: () => context.go(AppRoutes.login),
         ),
       ],
     );

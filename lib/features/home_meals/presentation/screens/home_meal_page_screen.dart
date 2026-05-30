@@ -203,15 +203,24 @@ class _HomeMealTile extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis),
                     ),
-                    Text('${meal.calories.toStringAsFixed(0)} ${l.kCal}',
-                        style: AppTextStyles.labelLarge
-                            .copyWith(color: AppColors.primary)),
+                    // ── CHANGED: bolder calories text ──
+                    Text(
+                      '${meal.calories.toStringAsFixed(0)} ${l.kCal}',
+                      style: AppTextStyles.labelLarge.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 4),
+                // ── CHANGED: darker macros text ──
                 Text(
                   'P: ${meal.protein.toStringAsFixed(0)}g  C: ${meal.carbs.toStringAsFixed(0)}g  F: ${meal.totalFat.toStringAsFixed(0)}g',
-                  style: AppTextStyles.bodySmall,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
