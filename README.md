@@ -109,6 +109,31 @@ This replaces the placeholder `lib/firebase_options.dart` with your real credent
 firebase deploy --only firestore:rules
 firebase deploy --only firestore:indexes
 ```
+#### d. Firebase Storage Rules
+
+In the Firebase Console → Storage → Rules, publish:
+
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /meal_images/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+    match /restaurant_logos/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}
+```
+
+> Without these rules, meal image and logo uploads will be rejected with a permissions error.
 
 ### 3. Firestore Initial Data
 
@@ -190,8 +215,8 @@ flutter run --release
 - **Recommendation scoring (0–100):**
   - Calorie proximity to single-meal target (40 pts)
   - Macro distribution matching user goal (40 pts)
-  - Allergen/condition penalty (up to −20 pts)
-
+  - Condition penalty (up to −20 pts)
+  - **Meals containing the user's allergens are hidden entirely from the Recommended tab**
 ### Health Concerns
 - **Conditions:** Diabetes (flags high sugar >15g), High BP (flags high sodium >800mg)
 - **Allergies:** Milk, Peanuts, Shellfish, Fish, Eggs, Tree Nut, Soy, Wheat, Sesame
@@ -201,6 +226,11 @@ flutter run --release
 - Language toggle in Settings
 - Full RTL layout when Arabic is selected
 - All UI strings in `lib/l10n/app_en.arb` and `lib/l10n/app_ar.arb`
+
+---
+## Emulator Note
+
+Use a **standard** Android emulator (e.g. Pixel 8 API 34 or 35 — "Google Play Intel x86_64"). Avoid any AVD with **"16k"** in the name (16KB page-size emulators crash with Firebase native libraries).
 
 ---
 
