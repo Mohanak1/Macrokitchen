@@ -29,10 +29,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
-    final error = await ref.read(authNotifierProvider.notifier).login(
-          email: _emailCtrl.text.trim(),
-          password: _passwordCtrl.text,
-        );
+    final error = await ref
+        .read(authNotifierProvider.notifier)
+        .login(email: _emailCtrl.text.trim(), password: _passwordCtrl.text);
     if (error != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(error), backgroundColor: AppColors.error),
@@ -157,7 +156,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () => context.go(AppRoutes.forgotPassword),
+                    onPressed: () => context.push(AppRoutes.forgotPassword),
                     child: const Text('Forgot Your Password ?'),
                   ),
                 ),
