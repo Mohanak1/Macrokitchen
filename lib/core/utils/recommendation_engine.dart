@@ -35,7 +35,9 @@ class RecommendationEngine {
       // --- 1. Allergen filtering ---
       final mealAllergens = meal.allergens.map((a) => a.toLowerCase()).toSet();
       final hasAllergen = allergies.intersection(mealAllergens).isNotEmpty;
-      final conflictingAllergens = allergies.intersection(mealAllergens).toList();
+      final conflictingAllergens =
+          allergies.intersection(mealAllergens).toList();
+      if (hasAllergen) continue;
 
       // --- 2. Condition warnings ---
       final warnings = <String>[];
@@ -55,7 +57,8 @@ class RecommendationEngine {
 
       // Calorie score (0–40 points): penalize distance from target
       final calorieDelta = (meal.calories - singleMealTarget).abs();
-      final calorieScore = 40 * (1 - (calorieDelta / _maxCalorieDelta).clamp(0, 1));
+      final calorieScore =
+          40 * (1 - (calorieDelta / _maxCalorieDelta).clamp(0, 1));
 
       // Macro score (0–40 points)
       double macroScore = 0;
@@ -81,10 +84,7 @@ class RecommendationEngine {
       }
 
       // Warning penalty (0–20 points)
-      double warningPenalty = 0;
-      if (hasAllergen) warningPenalty += 20; // Hard penalty
-      warningPenalty += warnings.length * 10;
-      warningPenalty = warningPenalty.clamp(0, 20);
+      double warningPenalty = (warnings.length * 10).clamp(0, 20).toDouble();
 
       score = calorieScore + macroScore - warningPenalty;
       score = score.clamp(0, 100);

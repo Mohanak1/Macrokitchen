@@ -128,18 +128,12 @@ class _RestaurantLoginScreenState extends ConsumerState<RestaurantLoginScreen> {
 
                 const SizedBox(height: AppDimensions.md),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text('Contact Us'),
-                    ),
-                    TextButton(
-                      onPressed: () => context.go(AppRoutes.forgotPassword),
-                      child: const Text('Forgot Your Password ?'),
-                    ),
-                  ],
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    onPressed: () {},
+                    child: const Text('Contact Us'),
+                  ),
                 ),
 
                 const SizedBox(height: AppDimensions.lg),

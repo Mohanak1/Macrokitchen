@@ -1,20 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/services/image_upload_service.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../meals/presentation/providers/meals_provider.dart';
 import '../providers/restaurant_provider.dart';
 
-class RestaurantDashboardScreen extends ConsumerWidget {
+class RestaurantDashboardScreen extends ConsumerStatefulWidget {
   const RestaurantDashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RestaurantDashboardScreen> createState() =>
+      _RestaurantDashboardScreenState();
+}
+
+class _RestaurantDashboardScreenState
+    extends ConsumerState<RestaurantDashboardScreen> {
+  bool _uploadingLogo = false;
+
+  Future<void> _pickAndUploadLogo(String restaurantId) async {
+    final service = ref.read(imageUploadServiceProvider);
+    final file = await service.pickImage(source: ImageSource.gallery);
+    if (file == null) return;
+
+    setState(() => _uploadingLogo = true);
+
+    final result = await service.uploadRestaurantLogo(file);
+    result.fold(
+      (failure) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Upload failed: ${failure.message}'),
+            backgroundColor: AppColors.error,
+          ));
+        }
+      },
+      (url) async {
+        await ref
+            .read(restaurantDatasourceProvider)
+            .updateLogoUrl(restaurantId, url);
+        ref.invalidate(currentRestaurantProvider);
+      },
+    );
+
+    if (mounted) setState(() => _uploadingLogo = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final restaurantAsync = ref.watch(currentRestaurantProvider);
     final mealsAsync = ref.watch(restaurantOwnMealsProvider);
 
@@ -58,19 +97,48 @@ class RestaurantDashboardScreen extends ConsumerWidget {
                   Center(
                     child: Column(
                       children: [
-                        Container(
-                          width: 72,
-                          height: 72,
-                          decoration: const BoxDecoration(
-                            color: AppColors.primaryContainer,
-                            shape: BoxShape.circle,
+                        GestureDetector(
+                          onTap: _uploadingLogo
+                              ? null
+                              : () => _pickAndUploadLogo(restaurant.id),
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: 72,
+                                height: 72,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primaryContainer,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: _uploadingLogo
+                                    ? const Center(
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: AppColors.primary))
+                                    : restaurant.logoUrl != null
+                                        ? ClipOval(
+                                            child: Image.network(
+                                                restaurant.logoUrl!,
+                                                fit: BoxFit.cover))
+                                        : const Icon(Icons.store,
+                                            color: AppColors.primary, size: 36),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  width: 22,
+                                  height: 22,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.camera_alt,
+                                      color: Colors.white, size: 13),
+                                ),
+                              ),
+                            ],
                           ),
-                          child: restaurant.logoUrl != null
-                              ? ClipOval(
-                                  child: Image.network(restaurant.logoUrl!,
-                                      fit: BoxFit.cover))
-                              : const Icon(Icons.store,
-                                  color: AppColors.primary, size: 36),
                         ),
                         const SizedBox(height: AppDimensions.sm),
                         Text(restaurant.name,

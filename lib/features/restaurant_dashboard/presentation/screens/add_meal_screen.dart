@@ -217,18 +217,25 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                                 child: Image.file(_pickedImage!,
                                     fit: BoxFit.cover),
                               )
-                            : const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.add_photo_alternate_outlined,
-                                      color: AppColors.primary, size: 32),
-                                  SizedBox(height: 4),
-                                  Text('Add Image',
-                                      style: TextStyle(
-                                          color: AppColors.primary,
-                                          fontSize: 12)),
-                                ],
-                              ),
+                            : _uploadedImageUrl != null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                        AppDimensions.radiusMd),
+                                    child: Image.network(_uploadedImageUrl!,
+                                        fit: BoxFit.cover),
+                                  )
+                                : const Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.add_photo_alternate_outlined,
+                                          color: AppColors.primary, size: 32),
+                                      SizedBox(height: 4),
+                                      Text('Add Image',
+                                          style: TextStyle(
+                                              color: AppColors.primary,
+                                              fontSize: 12)),
+                                    ],
+                                  ),
                   ),
                 ),
               ),

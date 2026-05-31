@@ -34,23 +34,48 @@ class RestaurantDatasource {
   RestaurantDatasource({FirebaseFirestore? db})
       : _db = db ?? FirebaseFirestore.instance;
 
-  Future<Restaurant?> getRestaurantByOwner(String ownerId) async {
+  Future<Restaurant?> getRestaurantByOwner(String ownerId,
+      {String? email, String? name}) async {
     final snap = await _db
         .collection('restaurants')
         .where('ownerId', isEqualTo: ownerId)
         .limit(1)
         .get();
-    if (snap.docs.isEmpty) return null;
-    final doc = snap.docs.first;
-    final d = doc.data();
+    if (snap.docs.isNotEmpty) {
+      final doc = snap.docs.first;
+      final d = doc.data();
+      return Restaurant(
+        id: doc.id,
+        name: d['name'] as String? ?? 'My Restaurant',
+        logoUrl: d['logoUrl'] as String?,
+        ownerId: d['ownerId'] as String? ?? ownerId,
+        contactEmail: d['contactEmail'] as String? ?? '',
+        isActive: d['isActive'] as bool? ?? true,
+      );
+    }
+    final ref = _db.collection('restaurants').doc();
+    final data = {
+      'ownerId': ownerId,
+      'name': name ?? 'My Restaurant',
+      'contactEmail': email ?? '',
+      'isActive': true,
+      'logoUrl': null,
+    };
+    await ref.set(data);
     return Restaurant(
-      id: doc.id,
-      name: d['name'] as String? ?? 'My Restaurant',
-      logoUrl: d['logoUrl'] as String?,
-      ownerId: d['ownerId'] as String? ?? ownerId,
-      contactEmail: d['contactEmail'] as String? ?? '',
-      isActive: d['isActive'] as bool? ?? true,
+      id: ref.id,
+      name: data['name'] as String,
+      ownerId: ownerId,
+      contactEmail: data['contactEmail'] as String,
+      isActive: true,
     );
+  }
+
+  Future<void> updateLogoUrl(String restaurantId, String logoUrl) async {
+    await _db
+        .collection('restaurants')
+        .doc(restaurantId)
+        .update({'logoUrl': logoUrl});
   }
 
   Future<List<Restaurant>> getAllRestaurants() async {
@@ -74,8 +99,7 @@ class RestaurantDatasource {
 
 // ── Providers ─────────────────────────────────────────────────────────────────
 
-final restaurantDatasourceProvider =
-    Provider((_) => RestaurantDatasource());
+final restaurantDatasourceProvider = Provider((_) => RestaurantDatasource());
 
 /// Current restaurant for logged-in restaurant owner
 final currentRestaurantProvider = FutureProvider<Restaurant?>((ref) async {
@@ -83,7 +107,7 @@ final currentRestaurantProvider = FutureProvider<Restaurant?>((ref) async {
   if (user == null || !user.isRestaurant) return null;
   return ref
       .read(restaurantDatasourceProvider)
-      .getRestaurantByOwner(user.uid);
+      .getRestaurantByOwner(user.uid, email: user.email, name: user.name);
 });
 
 /// All restaurants (for browsing)
