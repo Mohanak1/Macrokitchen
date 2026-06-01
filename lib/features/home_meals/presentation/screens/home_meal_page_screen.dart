@@ -6,19 +6,86 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/app_widgets.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../bmi/presentation/providers/bmi_provider.dart';
+import '../../../history/presentation/providers/history_provider.dart';
 import '../providers/home_meals_provider.dart';
 
 class HomeMealPageScreen extends ConsumerWidget {
   const HomeMealPageScreen({super.key});
 
+  Future<void> _logMeal(BuildContext context, WidgetRef ref, HomeMeal meal,
+      {required double dailyTarget, required double consumed}) async {
+    final user = ref.read(authStateProvider).value;
+    if (user == null) return;
+
+    final willExceed = (consumed + meal.calories) > dailyTarget;
+    if (willExceed && context.mounted) {
+      final proceed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Calorie Limit Exceeded'),
+          content: Text(
+            'Adding this meal will bring you to ${(consumed + meal.calories).toStringAsFixed(0)} kCal, '
+            'exceeding your daily target of ${dailyTarget.toStringAsFixed(0)} kCal.',
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => ctx.pop(false), child: const Text('Cancel')),
+            TextButton(
+                onPressed: () => ctx.pop(true),
+                child: const Text('Log Anyway')),
+          ],
+        ),
+      );
+      if (proceed != true) return;
+    }
+
+    final now = DateTime.now();
+    final date =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final entry = MealHistoryEntry(
+      id: '',
+      userId: user.uid,
+      homeMealId: meal.id,
+      mealTitle: meal.title,
+      type: 'home',
+      calories: meal.calories,
+      protein: meal.protein,
+      carbs: meal.carbs,
+      totalFat: meal.totalFat,
+      loggedAt: now,
+      date: date,
+    );
+
+    final error = await ref.read(historyNotifierProvider.notifier).log(entry);
+    if (context.mounted) {
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error), backgroundColor: AppColors.error),
+        );
+      } else {
+        ref.invalidate(todayTotalsProvider);
+        ref.invalidate(historyProvider);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Meal logged!'),
+            backgroundColor: AppColors.primary,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mealsAsync = ref.watch(homeMealsStreamProvider);
     final bmiAsync = ref.watch(bmiProfileProvider);
+    final todayAsync = ref.watch(todayTotalsProvider);
     final l = AppLocalizations.of(context)!;
 
     final dailyTarget = bmiAsync.value?.dailyCalorieTarget ?? 2000;
+    final consumed = todayAsync.value?.calories ?? 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -34,8 +101,7 @@ class HomeMealPageScreen extends ConsumerWidget {
         loading: () => const AppLoading(),
         error: (e, _) => Center(child: Text('${l.errorLoadingMeals}: $e')),
         data: (meals) {
-          final totalConsumed =
-              meals.fold<double>(0, (sum, m) => sum + m.calories);
+          final totalConsumed = consumed;
           final remaining = (dailyTarget - totalConsumed).clamp(0, dailyTarget);
 
           return Column(
@@ -128,6 +194,8 @@ class HomeMealPageScreen extends ConsumerWidget {
                             },
                             onEdit: () =>
                                 context.go('/home-meals/add?mealId=${meal.id}'),
+                            onLog: () => _logMeal(context, ref, meal,
+                                dailyTarget: dailyTarget, consumed: consumed),
                           );
                         },
                       ),
@@ -152,8 +220,7 @@ class HomeMealPageScreen extends ConsumerWidget {
         title: Text(l.deleteMealTitle),
         content: Text(l.deleteMealMessage),
         actions: [
-          TextButton(
-              onPressed: () => ctx.pop(false), child: Text(l.cancel)),
+          TextButton(onPressed: () => ctx.pop(false), child: Text(l.cancel)),
           TextButton(
               onPressed: () => ctx.pop(true),
               child: Text(l.delete,
@@ -168,11 +235,13 @@ class _HomeMealTile extends StatelessWidget {
   final HomeMeal meal;
   final VoidCallback onDelete;
   final VoidCallback onEdit;
+  final VoidCallback onLog;
 
   const _HomeMealTile({
     required this.meal,
     required this.onDelete,
     required this.onEdit,
+    required this.onLog,
   });
 
   @override
@@ -224,6 +293,12 @@ class _HomeMealTile extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+          IconButton(
+            icon:
+                const Icon(Icons.add_circle_outline, color: AppColors.primary),
+            tooltip: 'Log meal',
+            onPressed: onLog,
           ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, color: AppColors.textHint),

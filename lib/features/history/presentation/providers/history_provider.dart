@@ -4,7 +4,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../../home_meals/presentation/providers/home_meals_provider.dart';
 
 // ── Entity ────────────────────────────────────────────────────────────────────
 
@@ -135,10 +134,11 @@ class HistoryDatasource {
     final snap = await _db
         .collection('meal_history')
         .where('userId', isEqualTo: userId)
-        .orderBy('loggedAt', descending: true)
         .limit(50)
         .get();
-    return snap.docs.map(MealHistoryModel.fromFirestore).toList();
+    final results = snap.docs.map(MealHistoryModel.fromFirestore).toList();
+    results.sort((a, b) => b.loggedAt.compareTo(a.loggedAt));
+    return results;
   }
 
   Future<List<MealHistoryModel>> getTodayHistory(
@@ -244,7 +244,7 @@ final historyProvider = FutureProvider<List<MealHistoryEntry>>((ref) async {
   return result.fold((_) => [], (list) => list);
 });
 
-/// Today's aggregated totals (used for calorie ring on home screen)
+/// Today's aggregated totals — only meals explicitly logged to meal_history
 final todayTotalsProvider = FutureProvider<DailyTotals>((ref) async {
   final user = ref.watch(authStateProvider).value;
   if (user == null) return DailyTotals.zero();
@@ -253,26 +253,15 @@ final todayTotalsProvider = FutureProvider<DailyTotals>((ref) async {
   final date =
       '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
-  // Also include today's home meals
-  final homeAsync = ref.watch(homeMealsProvider);
-  final homeCalories =
-      homeAsync.value?.fold<double>(0, (s, m) => s + m.calories) ?? 0;
-  final homeProtein =
-      homeAsync.value?.fold<double>(0, (s, m) => s + m.protein) ?? 0;
-  final homeCarbs =
-      homeAsync.value?.fold<double>(0, (s, m) => s + m.carbs) ?? 0;
-  final homeFats =
-      homeAsync.value?.fold<double>(0, (s, m) => s + m.totalFat) ?? 0;
-
   final result =
       await ref.read(historyRepositoryProvider).getTodayHistory(user.uid, date);
   final entries = result.fold((_) => <MealHistoryEntry>[], (l) => l);
 
   return DailyTotals(
-    calories: entries.fold<double>(0, (s, e) => s + e.calories) + homeCalories,
-    protein: entries.fold<double>(0, (s, e) => s + e.protein) + homeProtein,
-    carbs: entries.fold<double>(0, (s, e) => s + e.carbs) + homeCarbs,
-    fats: entries.fold<double>(0, (s, e) => s + e.totalFat) + homeFats,
+    calories: entries.fold<double>(0, (s, e) => s + e.calories),
+    protein: entries.fold<double>(0, (s, e) => s + e.protein),
+    carbs: entries.fold<double>(0, (s, e) => s + e.carbs),
+    fats: entries.fold<double>(0, (s, e) => s + e.totalFat),
   );
 });
 

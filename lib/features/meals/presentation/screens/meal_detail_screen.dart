@@ -1,21 +1,96 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/nutrition_widgets.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../bmi/presentation/providers/bmi_provider.dart';
+import '../../../history/presentation/providers/history_provider.dart';
 import '../providers/meals_provider.dart';
 
 class MealDetailScreen extends ConsumerWidget {
   final String mealId;
   const MealDetailScreen({super.key, required this.mealId});
 
+  Future<void> _logMeal(BuildContext context, WidgetRef ref,
+      {required String userId,
+      required String title,
+      required double calories,
+      required double protein,
+      required double carbs,
+      required double fat,
+      required double dailyTarget,
+      required double consumed}) async {
+    final now = DateTime.now();
+    final date =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+
+    final willExceed = (consumed + calories) > dailyTarget;
+    if (willExceed && context.mounted) {
+      final proceed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Calorie Limit Exceeded'),
+          content: Text(
+            'Adding this meal will bring you to ${(consumed + calories).toStringAsFixed(0)} kCal, '
+            'exceeding your daily target of ${dailyTarget.toStringAsFixed(0)} kCal.',
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => ctx.pop(false), child: const Text('Cancel')),
+            TextButton(
+                onPressed: () => ctx.pop(true),
+                child: const Text('Log Anyway')),
+          ],
+        ),
+      );
+      if (proceed != true) return;
+    }
+
+    final entry = MealHistoryEntry(
+      id: '',
+      userId: userId,
+      mealId: mealId,
+      mealTitle: title,
+      type: 'restaurant',
+      calories: calories,
+      protein: protein,
+      carbs: carbs,
+      totalFat: fat,
+      loggedAt: now,
+      date: date,
+    );
+
+    final error = await ref.read(historyNotifierProvider.notifier).log(entry);
+    if (context.mounted) {
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error), backgroundColor: AppColors.error),
+        );
+      } else {
+        ref.invalidate(todayTotalsProvider);
+        ref.invalidate(historyProvider);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Meal logged!'),
+            backgroundColor: AppColors.primary,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mealAsync = ref.watch(mealByIdProvider(mealId));
     final bmiAsync = ref.watch(bmiProfileProvider);
+    final todayAsync = ref.watch(todayTotalsProvider);
+    final user = ref.watch(authStateProvider).value;
+    final dailyTarget = bmiAsync.value?.dailyCalorieTarget ?? 2000;
+    final consumed = todayAsync.value?.calories ?? 0;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Meal Details')),
@@ -48,200 +123,232 @@ class MealDetailScreen extends ConsumerWidget {
             warnings.add('High Sugar — not suitable for Diabetes');
           }
 
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Meal image
-                meal.imageUrl != null && meal.imageUrl!.isNotEmpty
-                    ? Image.network(
-                        meal.imageUrl!,
-                        width: double.infinity,
-                        height: 220,
-                        fit: BoxFit.cover,
-                      )
-                    : Container(
-                        width: double.infinity,
-                        height: 200,
-                        color: AppColors.inputFill,
-                        child: const Icon(Icons.restaurant,
-                            color: AppColors.primary, size: 64),
-                      ),
-
-                Padding(
-                  padding: const EdgeInsets.all(AppDimensions.pagePaddingH),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Title + rating
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(meal.title,
-                                style: AppTextStyles.headlineLarge),
+          return Stack(
+            children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 80),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Meal image
+                    meal.imageUrl != null && meal.imageUrl!.isNotEmpty
+                        ? Image.network(
+                            meal.imageUrl!,
+                            width: double.infinity,
+                            height: 220,
+                            fit: BoxFit.cover,
+                          )
+                        : Container(
+                            width: double.infinity,
+                            height: 200,
+                            color: AppColors.inputFill,
+                            child: const Icon(Icons.restaurant,
+                                color: AppColors.primary, size: 64),
                           ),
+
+                    Padding(
+                      padding: const EdgeInsets.all(AppDimensions.pagePaddingH),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Title + rating
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Icon(Icons.star_rounded,
-                                  color: AppColors.rating, size: 18),
-                              const SizedBox(width: 2),
-                              Text(
-                                meal.rating.toStringAsFixed(1),
-                                style: AppTextStyles.labelLarge,
+                              Expanded(
+                                child: Text(meal.title,
+                                    style: AppTextStyles.headlineLarge),
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(Icons.star_rounded,
+                                      color: AppColors.rating, size: 18),
+                                  const SizedBox(width: 2),
+                                  Text(
+                                    meal.rating.toStringAsFixed(1),
+                                    style: AppTextStyles.labelLarge,
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                      Text(meal.restaurantName,
-                          style: AppTextStyles.bodyMedium),
+                          Text(meal.restaurantName,
+                              style: AppTextStyles.bodyMedium),
 
-                      const SizedBox(height: AppDimensions.xl),
+                          const SizedBox(height: AppDimensions.xl),
 
-                      // ── Allergen Warning ─────────────────────────────────
-                      if (hasAllergen) ...[
-                        _WarningBanner(
-                          icon: Icons.warning_amber_rounded,
-                          color: AppColors.error,
-                          bgColor: Colors.red.shade50,
-                          message:
-                              'This meal contains allergens you are sensitive to: ${matchingAllergens.join(', ')}',
-                        ),
-                        const SizedBox(height: AppDimensions.lg),
-                      ],
-
-                      // ── Condition Warnings ────────────────────────────────
-                      ...warnings.map((w) => Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: AppDimensions.md),
-                            child: _WarningBanner(
-                              icon: Icons.info_outline,
-                              color: AppColors.warning,
-                              bgColor: Colors.orange.shade50,
-                              message: w,
+                          // ── Allergen Warning ─────────────────────────────────
+                          if (hasAllergen) ...[
+                            _WarningBanner(
+                              icon: Icons.warning_amber_rounded,
+                              color: AppColors.error,
+                              bgColor: Colors.red.shade50,
+                              message:
+                                  'This meal contains allergens you are sensitive to: ${matchingAllergens.join(', ')}',
                             ),
-                          )),
+                            const SizedBox(height: AppDimensions.lg),
+                          ],
 
-                      // ── Macro summary ────────────────────────────────────
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _MacroBlock(
-                            label: 'Calories',
-                            value: meal.calories.toStringAsFixed(0),
-                            unit: 'kCal',
-                            color: AppColors.calories,
+                          // ── Condition Warnings ────────────────────────────────
+                          ...warnings.map((w) => Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: AppDimensions.md),
+                                child: _WarningBanner(
+                                  icon: Icons.info_outline,
+                                  color: AppColors.warning,
+                                  bgColor: Colors.orange.shade50,
+                                  message: w,
+                                ),
+                              )),
+
+                          // ── Macro summary ────────────────────────────────────
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _MacroBlock(
+                                label: 'Calories',
+                                value: meal.calories.toStringAsFixed(0),
+                                unit: 'kCal',
+                                color: AppColors.calories,
+                              ),
+                              _MacroBlock(
+                                label: 'Protein',
+                                value: meal.protein.toStringAsFixed(0),
+                                unit: 'g',
+                                color: AppColors.protein,
+                              ),
+                              _MacroBlock(
+                                label: 'Carbs',
+                                value: meal.carbs.toStringAsFixed(0),
+                                unit: 'g',
+                                color: AppColors.carbs,
+                              ),
+                              if (meal.totalFat != null)
+                                _MacroBlock(
+                                  label: 'Fat',
+                                  value: meal.totalFat!.toStringAsFixed(0),
+                                  unit: 'g',
+                                  color: AppColors.fats,
+                                ),
+                            ],
                           ),
-                          _MacroBlock(
-                            label: 'Protein',
-                            value: meal.protein.toStringAsFixed(0),
-                            unit: 'g',
-                            color: AppColors.protein,
-                          ),
-                          _MacroBlock(
-                            label: 'Carbs',
-                            value: meal.carbs.toStringAsFixed(0),
-                            unit: 'g',
-                            color: AppColors.carbs,
-                          ),
-                          if (meal.totalFat != null)
-                            _MacroBlock(
-                              label: 'Fat',
-                              value: meal.totalFat!.toStringAsFixed(0),
-                              unit: 'g',
-                              color: AppColors.fats,
-                            ),
-                        ],
-                      ),
 
-                      const SizedBox(height: AppDimensions.xl),
+                          const SizedBox(height: AppDimensions.xl),
 
-                      // ── Full Nutrition Table ──────────────────────────────
-                      const Text('Nutrition Facts',
-                          style: AppTextStyles.headlineMedium),
-                      const SizedBox(height: AppDimensions.md),
-                      const Divider(),
-                      NutritionRow(
-                          label: 'Calories',
-                          value: '${meal.calories.toStringAsFixed(0)} kCal'),
-                      const Divider(),
-                      NutritionRow(
-                          label: 'Protein',
-                          value: '${meal.protein.toStringAsFixed(0)}g'),
-                      const Divider(),
-                      NutritionRow(
-                          label: 'Carbohydrates',
-                          value: '${meal.carbs.toStringAsFixed(0)}g'),
-                      if (meal.totalFat != null) ...[
-                        const Divider(),
-                        NutritionRow(
-                            label: 'Total Fat',
-                            value: '${meal.totalFat!.toStringAsFixed(0)}g'),
-                      ],
-                      if (meal.saturatedFat != null) ...[
-                        const Divider(),
-                        NutritionRow(
-                            label: '  Saturated Fat',
-                            value: '${meal.saturatedFat!.toStringAsFixed(0)}g'),
-                      ],
-                      if (meal.sodium != null) ...[
-                        const Divider(),
-                        NutritionRow(
-                            label: 'Sodium',
-                            value: '${meal.sodium!.toStringAsFixed(0)}mg'),
-                      ],
-                      if (meal.sugar != null) ...[
-                        const Divider(),
-                        NutritionRow(
-                            label: 'Sugar',
-                            value: '${meal.sugar!.toStringAsFixed(0)}g'),
-                      ],
-                      if (meal.fiber != null) ...[
-                        const Divider(),
-                        NutritionRow(
-                            label: 'Fiber',
-                            value: '${meal.fiber!.toStringAsFixed(0)}g'),
-                      ],
+                          // ── Full Nutrition Table ──────────────────────────────
+                          const Text('Nutrition Facts',
+                              style: AppTextStyles.headlineMedium),
+                          const SizedBox(height: AppDimensions.md),
+                          const Divider(),
+                          NutritionRow(
+                              label: 'Calories',
+                              value:
+                                  '${meal.calories.toStringAsFixed(0)} kCal'),
+                          const Divider(),
+                          NutritionRow(
+                              label: 'Protein',
+                              value: '${meal.protein.toStringAsFixed(0)}g'),
+                          const Divider(),
+                          NutritionRow(
+                              label: 'Carbohydrates',
+                              value: '${meal.carbs.toStringAsFixed(0)}g'),
+                          if (meal.totalFat != null) ...[
+                            const Divider(),
+                            NutritionRow(
+                                label: 'Total Fat',
+                                value: '${meal.totalFat!.toStringAsFixed(0)}g'),
+                          ],
+                          if (meal.saturatedFat != null) ...[
+                            const Divider(),
+                            NutritionRow(
+                                label: '  Saturated Fat',
+                                value:
+                                    '${meal.saturatedFat!.toStringAsFixed(0)}g'),
+                          ],
+                          if (meal.sodium != null) ...[
+                            const Divider(),
+                            NutritionRow(
+                                label: 'Sodium',
+                                value: '${meal.sodium!.toStringAsFixed(0)}mg'),
+                          ],
+                          if (meal.sugar != null) ...[
+                            const Divider(),
+                            NutritionRow(
+                                label: 'Sugar',
+                                value: '${meal.sugar!.toStringAsFixed(0)}g'),
+                          ],
+                          if (meal.fiber != null) ...[
+                            const Divider(),
+                            NutritionRow(
+                                label: 'Fiber',
+                                value: '${meal.fiber!.toStringAsFixed(0)}g'),
+                          ],
 
-                      // ── Allergens ─────────────────────────────────────────
-                      if (meal.allergens.isNotEmpty) ...[
-                        const SizedBox(height: AppDimensions.xl),
-                        const Text('Contains',
-                            style: AppTextStyles.headlineSmall),
-                        const SizedBox(height: AppDimensions.sm),
-                        Wrap(
-                          spacing: AppDimensions.sm,
-                          runSpacing: AppDimensions.sm,
-                          children: meal.allergens.map((a) {
-                            final isUserAllergen =
-                                userAllergies.contains(a.toLowerCase());
-                            return Chip(
-                              label: Text(a,
-                                  style: AppTextStyles.labelMedium.copyWith(
+                          // ── Allergens ─────────────────────────────────────────
+                          if (meal.allergens.isNotEmpty) ...[
+                            const SizedBox(height: AppDimensions.xl),
+                            const Text('Contains',
+                                style: AppTextStyles.headlineSmall),
+                            const SizedBox(height: AppDimensions.sm),
+                            Wrap(
+                              spacing: AppDimensions.sm,
+                              runSpacing: AppDimensions.sm,
+                              children: meal.allergens.map((a) {
+                                final isUserAllergen =
+                                    userAllergies.contains(a.toLowerCase());
+                                return Chip(
+                                  label: Text(a,
+                                      style: AppTextStyles.labelMedium.copyWith(
+                                        color: isUserAllergen
+                                            ? AppColors.error
+                                            : AppColors.textSecondary,
+                                      )),
+                                  backgroundColor: isUserAllergen
+                                      ? Colors.red.shade50
+                                      : AppColors.surfaceVariant,
+                                  side: BorderSide(
                                     color: isUserAllergen
                                         ? AppColors.error
-                                        : AppColors.textSecondary,
-                                  )),
-                              backgroundColor: isUserAllergen
-                                  ? Colors.red.shade50
-                                  : AppColors.surfaceVariant,
-                              side: BorderSide(
-                                color: isUserAllergen
-                                    ? AppColors.error
-                                    : AppColors.border,
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ],
+                                        : AppColors.border,
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ],
 
-                      const SizedBox(height: AppDimensions.huge),
-                    ],
-                  ),
+                          const SizedBox(height: AppDimensions.huge),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              // ── Log Meal button pinned at bottom ─────────────────────────
+              Positioned(
+                bottom: 16,
+                left: 16,
+                right: 16,
+                child: ref.watch(historyNotifierProvider).isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : AppButton(
+                        label: 'Log Meal',
+                        onPressed: user == null
+                            ? null
+                            : () => _logMeal(
+                                  context,
+                                  ref,
+                                  userId: user.uid,
+                                  title: meal.title,
+                                  calories: meal.calories,
+                                  protein: meal.protein,
+                                  carbs: meal.carbs,
+                                  fat: meal.totalFat ?? 0,
+                                  dailyTarget: dailyTarget,
+                                  consumed: consumed,
+                                ),
+                      ),
+              ),
+            ],
           );
         },
       ),
