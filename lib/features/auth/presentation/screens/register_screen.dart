@@ -137,10 +137,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   textInputAction: TextInputAction.next,
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Password is required';
-                    if (v.length < 6) return 'Minimum 6 characters';
-                    if (!RegExp(r'[A-Z]').hasMatch(v)) {
+                    if (v.length < 8) return 'Minimum 8 characters';
+                    if (!RegExp(r'[A-Z]').hasMatch(v))
                       return 'Include at least one uppercase letter';
-                    }
+                    if (!RegExp(r'[a-z]').hasMatch(v))
+                      return 'Include at least one lowercase letter';
+                    if (!RegExp(r'[0-9]').hasMatch(v))
+                      return 'Include at least one number';
+                    if (!RegExp(r'[!@#$%^&*(),.?_\-+=|<>{}\[\]\\;:~/`]')
+                        .hasMatch(v))
+                      return 'Include at least one special character';
                     return null;
                   },
                 ),

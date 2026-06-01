@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/utils/bmi_calculator.dart';
 import '../../domain/entities/bmi_profile.dart';
 
@@ -30,12 +31,15 @@ class BmiProfileModel extends BmiProfile {
       heightCm: (data['heightCm'] as num?)?.toDouble() ?? 170,
       weightKg: (data['weightKg'] as num?)?.toDouble() ?? 70,
       age: data['age'] as int? ?? 25,
-      activityLevel: ActivityLevel.values[activityIndex.clamp(0, ActivityLevel.values.length - 1)],
+      activityLevel: ActivityLevel
+          .values[activityIndex.clamp(0, ActivityLevel.values.length - 1)],
       goal: UserGoal.values[goalIndex.clamp(0, UserGoal.values.length - 1)],
       movement: data['movement'] as String? ?? 'rarely',
       bmiValue: (data['bmiValue'] as num?)?.toDouble() ?? 0,
-      bmiCategory: BmiCategory.values[categoryIndex.clamp(0, BmiCategory.values.length - 1)],
-      dailyCalorieTarget: (data['dailyCalorieTarget'] as num?)?.toDouble() ?? 2000,
+      bmiCategory: BmiCategory
+          .values[categoryIndex.clamp(0, BmiCategory.values.length - 1)],
+      dailyCalorieTarget:
+          (data['dailyCalorieTarget'] as num?)?.toDouble() ?? 2000,
       conditions: List<String>.from(data['conditions'] as List? ?? []),
       allergies: List<String>.from(data['allergies'] as List? ?? []),
       updatedAt: data['updatedAt'] != null
@@ -60,7 +64,7 @@ class BmiProfileModel extends BmiProfile {
       'dailyCalorieTarget': dailyCalorieTarget,
       'conditions': conditions,
       'allergies': allergies,
-      'updatedAt': updatedAt,
+      'updatedAt': Timestamp.fromDate(updatedAt),
     };
   }
 
