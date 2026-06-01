@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/app_widgets.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../bmi/presentation/providers/bmi_provider.dart';
 import '../providers/history_provider.dart';
 
@@ -15,11 +16,12 @@ class MealHistoryScreen extends ConsumerWidget {
     final historyAsync = ref.watch(historyProvider);
     final bmiAsync = ref.watch(bmiProfileProvider);
     final todayAsync = ref.watch(todayTotalsProvider);
+    final l = AppLocalizations.of(context)!;
 
     final dailyTarget = bmiAsync.value?.dailyCalorieTarget ?? 2000;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Meal History')),
+      appBar: AppBar(title: Text(l.mealHistory)),
       body: historyAsync.when(
         loading: () => const AppLoading(),
         error: (e, _) => AppErrorWidget(message: e.toString()),

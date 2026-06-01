@@ -30,6 +30,7 @@ class MacroKitchenApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final settings = ref.watch(settingsProvider);
+    ref.watch(settingsSyncProvider);
     final isArabic = settings.language == 'ar';
 
     return MaterialApp.router(

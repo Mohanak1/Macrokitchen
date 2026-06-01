@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/app_widgets.dart';
@@ -90,6 +91,10 @@ class HomeMealPageScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l.homeMealPage),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go(AppRoutes.meals),
+        ),
         actions: [
           TextButton(
             onPressed: () => context.go('/home-meals/add'),

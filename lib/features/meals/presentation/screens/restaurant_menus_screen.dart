@@ -8,6 +8,7 @@ import '../../../../core/router/app_router.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/nutrition_widgets.dart';
 import '../../../../core/widgets/skeleton_widgets.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../providers/meals_provider.dart';
 
 class RestaurantMenusScreen extends ConsumerStatefulWidget {
@@ -18,8 +19,7 @@ class RestaurantMenusScreen extends ConsumerStatefulWidget {
       _RestaurantMenusScreenState();
 }
 
-class _RestaurantMenusScreenState
-    extends ConsumerState<RestaurantMenusScreen> {
+class _RestaurantMenusScreenState extends ConsumerState<RestaurantMenusScreen> {
   final _searchCtrl = TextEditingController();
   bool _showRecommended = false;
 
@@ -33,9 +33,10 @@ class _RestaurantMenusScreenState
   Widget build(BuildContext context) {
     final filteredAsync = ref.watch(filteredMealsProvider);
     final recommendedAsync = ref.watch(recommendedMealsProvider);
+    final l = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Restaurant Menus')),
+      appBar: AppBar(title: Text(l.restaurantMenus)),
       body: Column(
         children: [
           // ── Search bar ───────────────────────────────────────────────────
@@ -48,8 +49,8 @@ class _RestaurantMenusScreenState
                     controller: _searchCtrl,
                     decoration: InputDecoration(
                       hintText: 'Search',
-                      prefixIcon: const Icon(Icons.search,
-                          color: AppColors.textHint),
+                      prefixIcon:
+                          const Icon(Icons.search, color: AppColors.textHint),
                       suffixIcon: _searchCtrl.text.isNotEmpty
                           ? IconButton(
                               icon: const Icon(Icons.close,
@@ -105,14 +106,13 @@ class _RestaurantMenusScreenState
                 padding: const EdgeInsets.all(AppDimensions.lg),
                 decoration: BoxDecoration(
                   color: AppColors.primaryContainer,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusMd),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
                 ),
                 child: Row(
                   children: [
                     const Icon(Icons.home_outlined, color: AppColors.primary),
                     const SizedBox(width: AppDimensions.md),
-                    Text('Home Meals',
+                    Text(l.homeMeals,
                         style: AppTextStyles.headlineSmall
                             .copyWith(color: AppColors.primary)),
                     const Spacer(),
@@ -178,8 +178,8 @@ class _AllMealsList extends ConsumerWidget {
           );
         }
         return ListView.builder(
-          padding:
-              const EdgeInsets.symmetric(horizontal: AppDimensions.pagePaddingH),
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppDimensions.pagePaddingH),
           itemCount: mealList.length,
           itemBuilder: (_, i) {
             final meal = mealList[i];
@@ -207,13 +207,14 @@ class _RecommendedList extends ConsumerWidget {
         final list = scored as List;
         if (list.isEmpty) {
           return const AppEmptyWidget(
-            message: 'Complete your BMI setup to\nget personalized recommendations.',
+            message:
+                'Complete your BMI setup to\nget personalized recommendations.',
             icon: Icons.recommend_outlined,
           );
         }
         return ListView.builder(
-          padding:
-              const EdgeInsets.symmetric(horizontal: AppDimensions.pagePaddingH),
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppDimensions.pagePaddingH),
           itemCount: list.length,
           itemBuilder: (_, i) {
             final s = list[i];

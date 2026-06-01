@@ -17,6 +17,7 @@ class SettingsScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final settings = ref.watch(settingsProvider);
     final isArabic = settings.language == 'ar';
+    final uid = ref.watch(authStateProvider).value?.uid ?? '';
 
     return Scaffold(
       appBar: AppBar(title: Text(l.settings)),
@@ -32,15 +33,17 @@ class SettingsScreen extends ConsumerWidget {
                 _LangButton(
                   label: 'English',
                   selected: !isArabic,
-                  onTap: () =>
-                      ref.read(settingsProvider.notifier).setLanguage('en'),
+                  onTap: () => ref
+                      .read(settingsProvider.notifier)
+                      .setLanguage('en', uid: uid),
                 ),
                 const SizedBox(width: AppDimensions.md),
                 _LangButton(
                   label: 'العربية',
                   selected: isArabic,
-                  onTap: () =>
-                      ref.read(settingsProvider.notifier).setLanguage('ar'),
+                  onTap: () => ref
+                      .read(settingsProvider.notifier)
+                      .setLanguage('ar', uid: uid),
                 ),
               ],
             ),
