@@ -126,6 +126,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
         SnackBar(content: Text(error), backgroundColor: AppColors.error),
       );
     } else if (mounted) {
+      ref.invalidate(bmiProfileProvider);
       context.go(AppRoutes.home);
     }
   }

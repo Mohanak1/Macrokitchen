@@ -141,14 +141,6 @@ class BmiPageScreen extends ConsumerWidget {
                     value:
                         '${profile.dailyCalorieTarget.toStringAsFixed(0)} kcal'),
 
-                const SizedBox(height: AppDimensions.xxxl),
-
-                AppButton(
-                  label: l.editProfile,
-                  isOutlined: true,
-                  onPressed: () => context.go(AppRoutes.setup),
-                ),
-
                 const SizedBox(height: AppDimensions.xxl),
               ],
             ),
